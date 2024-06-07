@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# VidBrief
 
-## Getting Started
+VidBrief is a web application built with Next.js that allows users to input YouTube video URLs and receive a summary of the video content. This can be particularly useful for users who want to get the gist of a video without watching the entire content.
 
-First, run the development server:
+## Table of Contents
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Features](#features)
+- [Demo](#demo)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API](#api)
+- [Contributing](#contributing)
+- [License](#license)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Input YouTube video URLs and generate summaries of the video content.
+- User-friendly interface built with Next.js.
+- API integration to process and summarize video content.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Demo
 
-## Learn More
+You can see a live demo of VidBrief [here](https://your-vercel-domain.vercel.app).
 
-To learn more about Next.js, take a look at the following resources:
+## Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To run VidBrief locally, follow these steps:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. **Clone the repository:**
 
-## Deploy on Vercel
+    ```bash
+    git clone https://github.com/123Brijesh44aa/vidbrief.git
+    cd VidBrief
+    cd vid-brief
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Install dependencies:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+    ```bash
+    npm install
+    ```
+
+3. **Run the development server:**
+
+    ```bash
+    npm run dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+## Usage
+
+1. **Input a YouTube URL:**
+
+    On the home page, enter the URL of the YouTube video you want to summarize.
+
+2. **Get the summary:**
+
+    After submitting the URL, VidBrief will process the video and provide a summary of its content.
+
+## API
+
+VidBrief includes a custom API for processing YouTube videos. The API endpoint is located at `/api`.
+
+### Example Request
+
+To use the API, make a GET request to `/api` with the `yt-url` parameter.
+
+```javascript
+const yt_url = 'https://www.youtube.com/watch?v=example';
+const apiResponse = await fetch(`/api?yt-url=${yt_url}`, {
+    method: 'GET',
+    cache: 'no-cache',
+});
