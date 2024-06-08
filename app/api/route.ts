@@ -6,7 +6,7 @@ import {generateVideoDescriptionUsingGenAi} from "@/utils/generateVideoDescripti
 
 configDotenv()
 
-export async function GET(request: NextRequest) {
+export default async function GET(request: NextRequest) {
 
 
 	const youtube_data_api_key = process.env.YOUTUBE_DATA_API_KEY;
