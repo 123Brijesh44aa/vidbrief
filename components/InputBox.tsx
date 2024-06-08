@@ -1,4 +1,5 @@
 import React, {Dispatch, SetStateAction} from 'react';
+import * as async_hooks from "node:async_hooks";
 
 interface InputBoxProps {
 	placeholder?: string;

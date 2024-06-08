@@ -10,9 +10,8 @@ export async function GET(request: NextRequest) {
 
 
 	const youtube_data_api_key = process.env.YOUTUBE_DATA_API_KEY;
-	let youtube_data_api_url_string:any = process.env.YOUTUBE_DATA_API_URL_STRING;
-
-	youtube_data_api_url_string = youtube_data_api_url_string.replace("<YOUTUBE-DATA-API-KEY>",youtube_data_api_key);
+	let youtube_data_api_url_string:any = "https://www.googleapis.com/youtube/v3/videos?id=YOUTUBE-VIDEO-ID&key=YOUTUBE-DATA-API-KEY&part=snippet,contentDetails,statistics,status";
+	youtube_data_api_url_string = youtube_data_api_url_string.replace("YOUTUBE-DATA-API-KEY", youtube_data_api_key);
 
 	try {
 
@@ -49,7 +48,7 @@ export async function GET(request: NextRequest) {
 
 
 
-			const videoDetails = await fetch(youtube_data_api_url_string.replace("<YOUTUBE-VIDEO-ID>",videoId), {
+			const videoDetails = await fetch(youtube_data_api_url_string.replace("YOUTUBE-VIDEO-ID",videoId), {
 				method: "GET",
 				cache: "no-cache",
 			});
