@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "app/api/route.ts": {
-      "memory": 128,
-      "maxDuration": 10
-    }
-  }
-}
