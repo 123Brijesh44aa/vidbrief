@@ -2,6 +2,7 @@ import {YoutubeTranscript, YoutubeTranscriptDisabledError} from "youtube-transcr
 import {NextRequest, NextResponse} from "next/server";
 import {configDotenv} from "dotenv";
 import {generateVideoDescriptionUsingGenAi} from "@/utils/generateVideoDescriptionUsingGenAi";
+import moment from "moment";
 
 
 configDotenv()
@@ -76,6 +77,14 @@ export async function GET(request: NextRequest) {
 					"https://www.gyanblog.com/static/fda2e87a08c62a203095b9d2d5cab9a5/670ae/youtube_thumbnails.jpg";
 
 				const content_details = await items[0].contentDetails;
+				if (moment.duration(content_details.duration).minutes() > 30 ){
+					return NextResponse.json(
+						{
+							success: false,
+							message: "Video duration is greater than 30 minutes"
+						}
+					)
+				}
 				if (content_details && content_details.caption === "false") {
 					return NextResponse.json(
 						{
