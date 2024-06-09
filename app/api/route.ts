@@ -151,3 +151,6 @@ export default async function GET(request: NextRequest) {
 		}
 	}
 }
+
+
+export const dynamic = 'force-dynamic'; // Ensures this route is always treated as dynamic
