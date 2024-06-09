@@ -57,24 +57,6 @@ export default function Home() {
 					<Logo width="w-32" height="w-32"/>
 				</div>
 
-				<div className={"mx-auto w-full md:w-[60%]"}>
-					<h1 className="font-black text-gray-600 p-4">
-						You Don&apos;t have to watch the whole video to get the gist of it.
-						Just paste the YouTube video url and get the summary of the video.
-					</h1>
-					<div className={"font-bold text-gray-700 bg-amber-100 p-4 mt-4"}>
-						<span className={"text-amber-600 text-3xl"}>&#8505;nfo:&nbsp;</span>
-						<ol className={"text-sm"}>
-							<li className={"pt-4"}>You can not paste the youtube video url whose transcript is not available or disabled by the owner.
-								if you paste the url of such video then you will get the error message.
-							</li>
-							<li className={"pt-4"}>
-								You can not paste the YouTube video url whose transcript is not in English.
-							</li>
-						</ol>
-					</div>
-				</div>
-
 				<div className="mx-auto w-full md:w-[70%]">
 					<InputBox
 						handleDescribe={handleDescribe}
@@ -153,10 +135,6 @@ export default function Home() {
 											&&
                                           <div className={"text-violet-700 font-black text-2xl pt-14"}>
                                               Watch the Complete Video here&nbsp;&nbsp;&nbsp; <br/> <br/>
-                                              {/*<Link href={videoUrl}*/}
-                                              {/*      className={"underline decoration-black py-10 text-xl font-semibold"}>*/}
-                                              {/*    [ {videoUrl} ]*/}
-                                              {/*</Link>*/}
 	                                          <iframe
 	                                            src={`https://www.youtube.com/embed/${videoUrl.split('v=')[1] || videoUrl.split('youtu.be/')[1]}`}
 	                                            width="100%"
