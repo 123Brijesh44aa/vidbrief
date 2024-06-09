@@ -6,11 +6,12 @@ import {generateVideoDescriptionUsingGenAi} from "@/utils/generateVideoDescripti
 
 configDotenv()
 
+
 export async function GET(request: NextRequest) {
 
 
 	const youtube_data_api_key = process.env.YOUTUBE_DATA_API_KEY;
-	let youtube_data_api_url_string:any = "https://www.googleapis.com/youtube/v3/videos?id=YOUTUBE-VIDEO-ID&key=YOUTUBE-DATA-API-KEY&part=snippet,contentDetails,statistics,status";
+	let youtube_data_api_url_string: any = "https://www.googleapis.com/youtube/v3/videos?id=YOUTUBE-VIDEO-ID&key=YOUTUBE-DATA-API-KEY&part=snippet,contentDetails,statistics,status";
 	youtube_data_api_url_string = youtube_data_api_url_string.replace("YOUTUBE-DATA-API-KEY", youtube_data_api_key);
 
 	try {
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
 		const apiKey = searchParams.get("api-key");
 		let encodedApiKey: string;
 		if (apiKey) {
-			 encodedApiKey = encodeURIComponent(apiKey);
+			encodedApiKey = encodeURIComponent(apiKey);
 		}
 
 		// Define your actual API key
@@ -46,22 +47,19 @@ export async function GET(request: NextRequest) {
 
 			const videoId = yt_url.split('v=')[1]?.split('&')[0] || yt_url.split('youtu.be/')[1];
 
+			console.time("fetchVideoDetails");
+			console.time("fetchTranscript");
+
+			const [videoDetailsResponse, transcript] = await Promise.all([
+				fetchVideoDetails(videoId, youtube_data_api_url_string), fetchTranscript(yt_url)
+			]);
+
+			console.timeEnd("fetchVideoDetails");
+			console.timeEnd("fetchTranscript");
+
+			// ......
 
 
-			const videoDetails = await fetch(youtube_data_api_url_string.replace("YOUTUBE-VIDEO-ID",videoId), {
-				method: "GET",
-				cache: "no-cache",
-			});
-
-			const videoDetailsResponse = await videoDetails.json();
-			if (!videoDetails.ok || !videoDetailsResponse || videoDetailsResponse.items.length === 0) {
-				return NextResponse.json(
-					{
-						success: false,
-						message: "Invalid URL"
-					}
-				);
-			}
 			const items = await videoDetailsResponse.items;
 			console.log(items);
 			let title: string;
@@ -77,6 +75,16 @@ export async function GET(request: NextRequest) {
 					snippet.thumbnails.default?.url ||
 					"https://www.gyanblog.com/static/fda2e87a08c62a203095b9d2d5cab9a5/670ae/youtube_thumbnails.jpg";
 
+				const content_details = await items[0].contentDetails;
+				if (content_details && content_details.caption === "false") {
+					return NextResponse.json(
+						{
+							success: false,
+							message: "Transcript disabled for this video"
+						}
+					)
+				}
+
 			} else {
 				return NextResponse.json(
 					{
@@ -87,34 +95,11 @@ export async function GET(request: NextRequest) {
 			}
 
 
-			const res = await YoutubeTranscript.fetchTranscript(yt_url);
+			// ..............
 
-
-			const englishSentencePattern = /^[A-Za-z0-9.,'!?;:\s]+$/;
-
-			const isEnglish = (text: string) =>  englishSentencePattern.test(text);
-
-			let transcriptArray = [];
-			let transcript: string;
-
-
-			if (res) {
-				if (res.length !== 0) {
-					if (res.map((item: any) => isEnglish(item.text))) {
-						transcriptArray = res.map((item: any) => item.text);
-						transcript = transcriptArray.join(' ');
-					} else {
-						transcript = " This video's transcript is not in English. Please try another video.";
-					}
-				}else {
-					transcript = "This video does not have a transcript. Please try another video.";
-				}
-			} else {
-				transcript = "This video does not have a transcript. Please try another video.";
-			}
-
-
-			const descriptionUsingGenAI = await generateVideoDescriptionUsingGenAi( {prompt: transcript});
+			console.time("generateVideoDescriptionUsingGenAi");
+			const descriptionUsingGenAI = await generateVideoDescriptionUsingGenAi({prompt: transcript});
+			console.timeEnd("generateVideoDescriptionUsingGenAi");
 
 			return NextResponse.json(
 				{
@@ -131,9 +116,9 @@ export async function GET(request: NextRequest) {
 				message: "Invalid URL"
 			}
 		);
-	} catch (error:any) {
+	} catch (error: any) {
 		console.log(error);
-		if (error instanceof YoutubeTranscriptDisabledError){
+		if (error instanceof YoutubeTranscriptDisabledError) {
 			return NextResponse.json(
 				{
 					success: false,
@@ -150,6 +135,48 @@ export async function GET(request: NextRequest) {
 			)
 		}
 	}
+}
+
+async function fetchVideoDetails(videoId: string, youtube_data_api_url_string: string) {
+	const videoDetails = await fetch(youtube_data_api_url_string.replace("YOUTUBE-VIDEO-ID", videoId), {
+		method: "GET",
+		cache: "no-cache",
+	});
+
+	const videoDetailsResponse = await videoDetails.json();
+	if (!videoDetails.ok || !videoDetailsResponse || videoDetailsResponse.items.length === 0) {
+		throw new Error("Invalid video URL");
+	}
+	return videoDetailsResponse;
+}
+
+async function fetchTranscript(yt_url: string) {
+
+	const res = await YoutubeTranscript.fetchTranscript(yt_url);
+
+	const englishSentencePattern = /^[A-Za-z0-9.,'!?;:\s]+$/;
+	const isEnglish = (text: string) => englishSentencePattern.test(text);
+	let transcriptArray = [];
+	let transcript: string;
+
+	if (res) {
+		if (res.length !== 0) {
+			if (res.map((item: any) => isEnglish(item.text))) {
+				transcriptArray = res.map((item: any) => item.text);
+				transcript = transcriptArray.join(' ');
+			} else {
+				transcript = " This video's transcript is not in English. Please try another video.";
+			}
+		} else {
+			transcript = "This video does not have a transcript. Please try another video.";
+		}
+	} else {
+		transcript = "This video does not have a transcript. Please try another video.";
+	}
+
+	console.log("Transcript store in cache");
+
+	return transcript;
 }
 
 
